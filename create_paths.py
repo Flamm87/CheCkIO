@@ -4,23 +4,25 @@ def get_layer(net, crush):
     return ["".join(x).replace(crush, "") for x in net if crush in x]
 
 
-def make_path(links, sourse, crushes):
-    paths = list(sourse)
+def make_path(links, source, crushes):
+    paths = list(source)
     for path in paths.copy():
         p = [path + i for i in links[path[-1]] if (i not in path) and (i not in crushes)]
         if len(p) == 0:
             continue
         paths.remove(path)
         paths.extend(p)
-    if paths == sourse:
+    if paths == source:
         return paths
     return make_path(links, paths, crushes)
+
 
 def disconnected_users(net, users, source, crushes):
     if source in crushes:
         return sum(users.values())
     link_nodes = {x: get_layer(net, x) for x in users.keys()}
     source_paths = make_path(link_nodes, source, crushes)
+    print(source_paths)
     set_con_point = set()
     for x in source_paths:
         set_con_point |= set(x)
