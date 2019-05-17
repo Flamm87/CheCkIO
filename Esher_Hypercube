@@ -1,0 +1,66 @@
+def check_world(coord, neib, word):
+    paths = [[x] for x in coord[word[0]]]
+    for i in range(len(word)):
+        if len(paths)==0: return False
+        for y in paths.copy():
+            if i + 1 < len(word):
+                for z in coord[word[i + 1]]:
+                    if z not in y and len({y[-1]} & set(neib[z])) > 0:
+                        paths.append(y + [z])
+            paths.remove(y)
+    return True
+
+
+def get_neighbour(coord, x_len, y_len):
+    x, y = coord
+    neighbour = []
+    if x - 1 >= 0:
+        neighbour.append((x - 1, y))
+    if y - 1 >= 0:
+        neighbour.append((x, y - 1))
+    if y + 1 <= y_len:
+        neighbour.append((x, y + 1))
+    if x + 1 <= x_len:
+        neighbour.append((x + 1, y))
+    return neighbour
+
+
+def hypercube(grid):
+    SEARCH_WORD = "hypercube"
+    coord = {}
+    neib = {}
+    for i in grid:
+        for x in i:
+            if x.lower() in set(SEARCH_WORD):
+                coord.setdefault(x.lower(), []).append((grid.index(i), i.index(x)))
+    if len(coord.keys()) != len(set(SEARCH_WORD)) or SEARCH_WORD[0] not in coord.keys():
+        return False
+    for x in coord.keys():
+        for y in coord[x]:
+            neib[y] = get_neighbour(y, len(grid[0]), len(grid))
+    return check_world(coord, neib, SEARCH_WORD)
+
+
+if __name__ == '__main__':
+    print("Example:")
+    print(hypercube(
+        [["J", "a", "t", "s", "x"],
+         ["a", "s", "p", "u", "z"],
+         ["a", "a", "q", "G", "f"],
+         ["x", "x", "x", "N", "h"],
+         ["z", "z", "z", "z", "R"]]))
+
+    # These "asserts" using only for self-checking and not necessary for auto-testing
+    assert hypercube([
+              ['g', 'f', 'H', 'Y', 'v'],
+              ['z', 'z', 'a', 'P', 'u'],
+              ['s', 'B', 'T', 'e', 'y'],
+              ['k', 'u', 'c', 'R', 't'],
+              ['l', 'O', 'k', 'p', 'r']]) == False
+    assert hypercube([
+              ['H', 'a', 't', 's', 'E'],
+              ['a', 'Y', 'p', 'u', 'B'],
+              ['a', 'a', 'P', 'y', 'U'],
+              ['x', 'x', 'x', 'E', 'C'],
+              ['z', 'z', 'z', 'z', 'R']]) == False
+    # print("Coding complete? Click 'Check' to earn cool rewards!")
